@@ -61,6 +61,147 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Mock-in-Python-Mock-Class" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/25/Mock-in-Python-Mock-Class/" class="article-date">
+  <time datetime="2016-01-25T10:19:31.000Z" itemprop="datePublished">2016-01-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/25/Mock-in-Python-Mock-Class/">Mock in Python: Mock Class</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="The_Mock_Class"><a href="#The_Mock_Class" class="headerlink" title="The Mock Class"></a>The Mock Class</h2><p>Mock is a flexible mock object intended to replace the use of stubs and test doubles throughout your code. Mocks are callable and create attributes as new mocks when you access them [1]. Accessing the same attribute will always return the same mock. Mocks record how you use them, allowing you to make assertions about what your code has done to them.</p>
+<p>Mock 是一个灵活的mock对象，它可以在你的代码中替代stub和test doubles的使用。 Mocks可以被调用，并且创造作为新的mock的属性。 获取相同属性总是返回相同的mock。 Mocks记录了你如何使用它们，允许你确认你的code对他们做了什么。</p>
+<p>MagicMock is a subclass of Mock with all the magic methods pre-created and ready to use. There are also non-callable variants, useful when you are mocking out objects that aren’t callable: NonCallableMock and NonCallableMagicMock</p>
+<p>The patch() decorators makes it easy to temporarily replace classes in a particular module with a Mock object. By default patch() will create a MagicMock for you. You can specify an alternative class of Mock using the new_callable argument to patch().</p>
+<p>MagicMock 是Mock的子类，但是它有预创建的所有magic methods. 同时还有non-callable的变量: NonCallableMock和NonCallableMock， 当你mock不被调用的对象时它们是有用的<br>patch() decorators使用Mock对象替代某个特定模块中的类变得容易。默认地， patch()会为你创建一个MagicMock。 你可以使用new_callable参数来实例化某个Mock类来patch.</p>
+<p>以下摘自diabloneo <a href="http://segmentfault.com/a/1190000002965620" target="_blank" rel="external">《python mock 的入门》</a></p>
+<p>Mock对象的一般用法是这样的：</p>
+<ol>
+<li>找到你要替换的对象，这个对象可以是一个类，一个函数或者是一个实例</li>
+<li>实例化Mock类，得到一个mock对象，然后设置这个mock对象的行为，比如被调用时返回什么值，被访问成员时返回什么值</li>
+<li>使用mock对象替换掉1中的对象</li>
+<li>写测试代码</li>
+</ol>
+<h2 id="u57FA_u672C_u7528_u6CD5"><a href="#u57FA_u672C_u7528_u6CD5" class="headerlink" title="基本用法"></a>基本用法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#! /usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_request</span><span class="params">(url)</span>:</span></span><br><span class="line">  r = requests.get(url)</span><br><span class="line">  <span class="keyword">return</span> r.status_code</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">visit_ustack</span><span class="params">()</span>:</span></span><br><span class="line">  <span class="keyword">return</span> send_request(<span class="string">'http://www.ustack.com'</span>)</span><br></pre></td></tr></table></figure>
+<p>外部模块调用visit_ustack来访问ustack</p>
+<p>使用mock对象进行单元测试<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">import</span> mock</span><br><span class="line"><span class="keyword">import</span> client</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestClient</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">test_success_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    success_send = mock.Mock(return_value = <span class="string">'200'</span>)</span><br><span class="line">    client.send_request = success_send</span><br><span class="line">    self.assertEquals(client.visit_ustack(), <span class="string">'200'</span>)</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">test_fail_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    fail_send = mock.Mock(return_value = <span class="string">'404'</span>)</span><br><span class="line">    client.send_request = fail_send</span><br><span class="line">    self.assertEquals(client.visit_ustack(), <span class="string">'404'</span>)</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>找到要替换的对象： 我们要测试的是visit_ustack函数，因此需要替换掉send_request函数</li>
+<li>实例化Mock类：函数的第一行</li>
+<li>使用mock的对象替换掉一中的对象</li>
+<li>assert</li>
+</ol>
+<h2 id="Mock_u7684_u53C2_u6570"><a href="#Mock_u7684_u53C2_u6570" class="headerlink" title="Mock的参数"></a>Mock的参数</h2><p>class unittest.mock.Mock(spec=None, side_effect=None, return_value=DEFAULT, wraps=None, name=None, spec_set=None, unsafe=False, **kwargs)</p>
+<ol>
+<li>name  标识一个mock</li>
+<li>side_effect<br>它可以是一个mock对象被调用时调用的函数，或者是可迭代的（iterable)或者是一个异常（class or instance)<br>If you pass in a function it will be called with same arguments as the mock and unless the function returns the DEFAULT singleton the call to the mock will then return whatever the function returns. If the function returns DEFAULT then the mock will return its normal value (from the return_value).<br>如果你传入的是一个函数，它会以和mock对象相同的参数调用，并且除非这个函数返回DEFAULT，调用mock会返回函数的返回值。如果函数返回DEFAULT，则mock对象会返回它的normal value（从return_value中获取）</li>
+</ol>
+<p>If you pass in an iterable, it is used to retrieve an iterator which must yield a value on every call. This value can either be an exception instance to be raised, or a value to be returned from the call to the mock (DEFAULT handling is identical to the function case).<br>如果传入一个iterable,那么它会用来获取一个迭代器，这个迭代器每当被调用都要返回一个值。这个值可以是一个被抛出的异常实例，也可以作为mock对象被调用时的返回值（对于DEFAULT的处理与函数一致）</p>
+<h3 id="u793A_u4F8B"><a href="#u793A_u4F8B" class="headerlink" title="示例"></a>示例</h3><ol>
+<li><p>抛出一个异常（用来测试代码对异常的处理）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock(side_effect=Exception(<span class="string">'Boom'</span>))</span><br><span class="line">mock()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>返回一组值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock()</span><br><span class="line">mock.side_effect = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">mock(), mock(), mock()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用callable</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock(return_value=<span class="number">3</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">side_effect</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">  <span class="keyword">return</span> DEFAULT</span><br><span class="line">mock.side_effect = side_effect</span><br><span class="line">mock()</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置None进行clear</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m = Mock(side_effect=KeyError, return_value=<span class="number">3</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m()</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line"> ...</span><br><span class="line">KeyError</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m.side_effect = <span class="keyword">None</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m()</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>return_value</p>
+</li>
+<li>spec<br>它可以是一个字符串列表，也可以是一个已经存在的对象（一个class或者一个instance），这个对象作为mock对象的specification. 如果你传入的是一个对象，那么会调用该对象的dir方法来得到一个字符串列表（排除不支持的Magic属性和方法）。 获取不在这个list中的属性会抛出AttributeError.<br>如果spec是一个对象（而不是一个字符串列表），那么<strong>class</strong>返回spec对象的class. 这使得mock对象允许进行isinstance()测试。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://roubao1994.github.io/2016/01/25/Mock-in-Python-Mock-Class/" data-id="cijtwt8po00008vsem1cu55sc" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mock-in-python-quick-guide" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/25/mock-in-python-quick-guide/" class="article-date">
+  <time datetime="2016-01-25T08:42:43.000Z" itemprop="datePublished">2016-01-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/25/mock-in-python-quick-guide/">mock in python: quick guide</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Quick_Guide"><a href="#Quick_Guide" class="headerlink" title="Quick Guide"></a>Quick Guide</h1><p>Mock and MagicMock objects create all attributes and methods as you access them and store details of how they have been used. You can configure them, to specify return values or limit what attributes are available, and then make assertions about how they have been used:</p>
+<p>Mock和MagicMock对象创建了所有的属性和方法，并且存储了它们该如何使用的细节。你可以通过配置它们来确定返回值或者限制属性的可见性，然后判断它们是如何被使用的。（即配置mock对象，并assert)<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unittest.mock <span class="keyword">import</span> MagicMock</span><br><span class="line"></span><br><span class="line">thing = ProductionClass()</span><br><span class="line"><span class="comment"># config 返回值为3</span></span><br><span class="line">thing.method = MagicMock(return_value=<span class="number">3</span>)</span><br><span class="line"><span class="comment"># 调用方法</span></span><br><span class="line">thing.method(<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, key=<span class="string">'value'</span>)</span><br><span class="line">&gt;&gt;<span class="number">3</span></span><br><span class="line"><span class="comment"># assert方法是否是调用的正确的参数</span></span><br><span class="line">thing.method.assert_called_with(<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, key=<span class="string">'value'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>side_effect allows you to perform side effects, including raising an exception when a mock is called:</p>
+<p>sede_effect使得你可以实现sede effects, 包括当mock被调用时抛出一个异常：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock(side_effect=KeyError(<span class="string">'foo'</span>))</span><br><span class="line"><span class="comment"># 调用mock时抛出一个异常</span></span><br><span class="line">mock()</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line"> ...</span><br><span class="line">KeyError: <span class="string">'foo'</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">values=&#123;<span class="string">'a'</span>:<span class="number">1</span>, <span class="string">'b'</span>:<span class="number">2</span>, <span class="string">'c'</span>:<span class="number">3</span>&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">side_effect</span><span class="params">(arg)</span>:</span></span><br><span class="line">  <span class="keyword">return</span> values[arg]</span><br><span class="line">mock.side_effect = side_effect</span><br><span class="line">mock(<span class="string">'a'</span>), mock(<span class="string">'b'</span>), mock(<span class="string">'c'</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">mock.side_effect = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>]</span><br><span class="line">mock(), mock(), mock()</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>Mock has many other ways you can configure it and control its behaviour. For example the spec argument configures the mock to take its specification from another object. Attempting to access attributes or methods on the mock that don’t exist on the spec will fail with an AttributeError.</p>
+<p>有很多方法来配置Mock并控制它的行为。例如， spec参数来配置mock从其他对象获取specification. 尝试从mock对象获取在spec中不存在的属性和方法会抛出AttributeError.</p>
+<p>The patch() decorator / context manager makes it easy to mock classes or objects in a module under test. The object you specify will be replaced with a mock (or other object) during the test and restored when the test ends:</p>
+<p>patch() decorator / context manager 使得在测试中mock模块中的类或对象变得容易。你所指定的对象会在测试中被mock对象（或其他对象）所取代, 并在测试结束后恢复</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unittest.mock <span class="keyword">import</span> patch</span><br><span class="line"></span><br><span class="line"><span class="decorator">@patch('module.ClassName2')</span></span><br><span class="line"><span class="decorator">@patch('module.ClassName1')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(MockClass1, MockClass2)</span>:</span></span><br><span class="line">  module.ClassName1()</span><br><span class="line">  module.ClassName2()</span><br><span class="line">  <span class="keyword">assert</span> MockClass1 <span class="keyword">is</span> module.ClassName1</span><br><span class="line">  <span class="keyword">assert</span> MockClass2 <span class="keyword">is</span> module.ClassName2</span><br><span class="line">  <span class="keyword">assert</span> MockClass1.called</span><br><span class="line">  <span class="keyword">assert</span> MockClass2.called</span><br></pre></td></tr></table></figure>
+<p><strong>Note When you nest patch decorators the mocks are passed in to the decorated function in the same order they applied (the normal python order that decorators are applied). This means from the bottom up, so in the example above the mock for module.ClassName1 is passed in first.<br>With patch() it matters that you patch objects in the namespace where they are looked up. This is normally straightforward, but for a quick guide read where to patch.</strong></p>
+<p><strong>注意: 当你使用嵌套的patch decorator时，mock对象传递给被装饰函数的顺序与他们applied的顺序相同（decorator在通常的python中的应用顺序）。这意味着是从下往上的，因此，在上面例子中，module.ClassName1C首先被传递。<br>通过patch(), 它表明你在他们所寻找的命名空间内注入你的对象。这个是很直观的，为了更迅速的了解，你可以阅读<a href="https://docs.python.org/dev/library/unittest.mock.html#where-to-patch" target="_blank" rel="external">where to patch</a></strong></p>
+<p>As well as a decorator patch() can be used as a context manager in a with statement:</p>
+<p>patch()还可以通过with语句变为上下文管理器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> patch.object(ProductionClass, <span class="string">'method'</span>, return_value=<span class="keyword">None</span>) <span class="keyword">as</span> mock_method:</span><br><span class="line">  thing = ProductionClass</span><br><span class="line">  thing.method(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">mock_method.assert_called_once_with(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>There is also patch.dict() for setting values in a dictionary just during a scope and restoring the dictionary to its original state when the test ends:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">foo = &#123;<span class="string">'key'</span>: <span class="string">'value'</span>&#125;</span><br><span class="line">original = foo.copy()</span><br><span class="line"><span class="keyword">with</span> patch.dict(foo, &#123;<span class="string">'newKey'</span>, <span class="string">'newValue'</span>&#125;, clear=<span class="keyword">True</span>):</span><br><span class="line">  <span class="keyword">assert</span> foo == &#123;<span class="string">'newKey'</span>, <span class="string">'newValue'</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">assert</span> foo == original</span><br></pre></td></tr></table></figure></p>
+<p>Mock 支持mock Python magic methods，最简单的使用magic methods的方式是通过MagicMock类. 你可以这么做：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mock = MagicMock()</span><br><span class="line">mock.__str__.return_value = <span class="string">'foobarbaz'</span></span><br><span class="line">str(mock)</span><br><span class="line">mock.__str__.assert_called_with()</span><br></pre></td></tr></table></figure></p>
+<p>Mock allows you to assign functions (or other Mock instances) to magic methods and they will be called appropriately. The MagicMock class is just a Mock variant that has all of the magic methods pre-created for you (well, all the useful ones anyway).<br>The following is an example of using magic methods with the ordinary Mock class:</p>
+<p>Mock使得你将函数（或者其他Mock实例）assign到magic methods上，并且它们能够被恰当地调用。 MaigicMock类只是一个含有所有magic methods方法的Mock变量。<br>以下是一个通过通常的Mock类使用magic methods的案例：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock()</span><br><span class="line">mock.__str__ = Mock(return_value=<span class="string">'wheeeee'</span>)</span><br><span class="line">str(mock)</span><br></pre></td></tr></table></figure></p>
+<p>For ensuring that the mock objects in your tests have the same api as the objects they are replacing, you can use auto-speccing. Auto-speccing can be done through the autospec argument to patch, or the create_autospec() function. Auto-speccing creates mock objects that have the same attributes and methods as the objects they are replacing, and any functions and methods (including constructors) have the same call signature as the real object.<br>This ensures that your mocks will fail in the same way as your production code if they are used incorrectly:</p>
+<p>为了确保你在测试中的mock对象有和它们替代对象相同的api， 你可以使用 <strong>auto-speccing</strong>. Auto-speccing 可以通过autoapec参数或者create_autospec()函数来实现。 Auto-speccing创建了与它们所替代的对象有相同属性和方法的mock对象。<br>这确保了当它们被错误使用时，你的mock对象和你的production code一样也会失败，并且方式一样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unittest.mock <span class="keyword">import</span> create_autospec</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">(a, b ,c)</span>:</span></span><br><span class="line">  <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">mock_function = create_autospec(function, return_value=<span class="string">'fishy'</span>)</span><br><span class="line">mock_function(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>fishy</span><br><span class="line">mock_function.assert_called_once_with(<span class="number">1</span>, <span class="number">2</span> ,<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">mock_function(<span class="string">'wrong params'</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line"> ...</span><br><span class="line">TypeError: &lt;<span class="keyword">lambda</span>&gt;() takes exactly <span class="number">3</span> arguments (<span class="number">1</span> given</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://roubao1994.github.io/2016/01/25/mock-in-python-quick-guide/" data-id="cijtwt8qa00068vse12xiljr8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mock/">mock</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-mock-in-python" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/25/mock-in-python/" class="article-date">
@@ -101,9 +242,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://roubao1994.github.io/2016/01/25/mock-in-python/" data-id="cijtpnxto00003jub7c25dy6i" class="article-share-link">Share</a>
+      <a data-url="http://roubao1994.github.io/2016/01/25/mock-in-python/" data-id="cijtwt8q300018vselvq0qex8" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mock/">mock</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
     </footer>
   </div>
   
@@ -146,7 +289,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://roubao1994.github.io/2016/01/23/hello-world/" data-id="cijtpnxtv00013jubcms3y58l" class="article-share-link">Share</a>
+      <a data-url="http://roubao1994.github.io/2016/01/23/hello-world/" data-id="cijtwt8qc00098vseyiifzcfb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -164,14 +307,28 @@
     
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/mock/">mock</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/mock/" style="font-size: 10px;">mock</a> <a href="/tags/python/" style="font-size: 10px;">python</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a><span class="archive-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -181,6 +338,14 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/01/25/Mock-in-Python-Mock-Class/">Mock in Python: Mock Class</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/25/mock-in-python-quick-guide/">mock in python: quick guide</a>
+          </li>
         
           <li>
             <a href="/2016/01/25/mock-in-python/">mock in python</a>
