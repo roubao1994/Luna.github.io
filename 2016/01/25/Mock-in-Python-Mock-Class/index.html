@@ -11,7 +11,7 @@
 <meta property="og:url" content="http://roubao1994.github.io/2016/01/25/Mock-in-Python-Mock-Class/index.html">
 <meta property="og:site_name" content="Roubao1994">
 <meta property="og:description" content="The Mock ClassMock is a flexible mock object intended to replace the use of stubs and test doubles throughout your code. Mocks are callable and create attributes as new mocks when you access them [1].">
-<meta property="og:updated_time" content="2016-01-27T07:13:24.000Z">
+<meta property="og:updated_time" content="2016-01-27T07:18:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mock in Python: Mock Class">
 <meta name="twitter:description" content="The Mock ClassMock is a flexible mock object intended to replace the use of stubs and test doubles throughout your code. Mocks are callable and create attributes as new mocks when you access them [1].">
@@ -110,7 +110,7 @@
 <li>side_effect<br>它可以是一个mock对象被调用时调用的函数，或者是可迭代的（iterable)或者是一个异常（class or instance)<br>If you pass in a function it will be called with same arguments as the mock and unless the function returns the DEFAULT singleton the call to the mock will then return whatever the function returns. If the function returns DEFAULT then the mock will return its normal value (from the return_value).<br>如果你传入的是一个函数，它会以和mock对象相同的参数调用，并且除非这个函数返回DEFAULT，调用mock会返回函数的返回值。如果函数返回DEFAULT，则mock对象会返回它的normal value（从return_value中获取）</li>
 </ol>
 <p>If you pass in an iterable, it is used to retrieve an iterator which must yield a value on every call. This value can either be an exception instance to be raised, or a value to be returned from the call to the mock (DEFAULT handling is identical to the function case).<br>如果传入一个iterable,那么它会用来获取一个迭代器，这个迭代器每当被调用都要返回一个值。这个值可以是一个被抛出的异常实例，也可以作为mock对象被调用时的返回值（对于DEFAULT的处理与函数一致）</p>
-<h3 id="u793A_u4F8B"><a href="#u793A_u4F8B" class="headerlink" title="示例"></a>示例</h3><ol>
+<h3 id="u793A_u4F8B"><a href="#u793A_u4F8B" class="headerlink" title="示例"></a>示例</h3><ul>
 <li><p>抛出一个异常（用来测试代码对异常的处理）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mock = Mock(side_effect=Exception(<span class="string">'Boom'</span>))</span><br><span class="line">mock()</span><br></pre></td></tr></table></figure>
 </li>
@@ -123,15 +123,16 @@
 <li><p>设置None进行clear</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m = Mock(side_effect=KeyError, return_value=<span class="number">3</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m()</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line"> ...</span><br><span class="line">KeyError</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m.side_effect = <span class="keyword">None</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>m()</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>return_value</p>
-</li>
+</ul>
+<ol>
+<li>return_value</li>
 <li>spec<br>它可以是一个字符串列表，也可以是一个已经存在的对象（一个class或者一个instance），这个对象作为mock对象的specification. 如果你传入的是一个对象，那么会调用该对象的dir方法来得到一个字符串列表（排除不支持的Magic属性和方法）。 获取不在这个list中的属性会抛出AttributeError.<br>如果spec是一个对象（而不是一个字符串列表），那么<strong>class</strong>返回spec对象的class. 这使得mock对象允许进行isinstance()测试。</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://roubao1994.github.io/2016/01/25/Mock-in-Python-Mock-Class/" data-id="cijtwt8po00008vsem1cu55sc" class="article-share-link">Share</a>
+      <a data-url="http://roubao1994.github.io/2016/01/25/Mock-in-Python-Mock-Class/" data-id="cijwi30qk00002psevsul6rdg" class="article-share-link">Share</a>
       
       
     </footer>
