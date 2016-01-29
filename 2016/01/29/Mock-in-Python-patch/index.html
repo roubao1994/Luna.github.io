@@ -6,24 +6,21 @@
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Roubao1994">
-    <title>Hello World - Roubao1994</title>
+    <title>Mock in Python: patch - Roubao1994</title>
     <meta name="author" content="Roubao">
     
     
     
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
+    <meta name="description" content="单元测试中Python独特的有用的技巧——暂时改变resource的行为有时候，你需要一个resource在某个test中表现不一样，并且这种改变只是暂时的，以免它影响其它不相关的test. 为了暂时改变某个资源的行为，你可以使用patching，一个在Python Mock模块中的能力，关于Python Mock 我在上篇文章中已经解释过了。在这篇文章中，我会解释关于mock patching的">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://roubao1994.github.io/2016/01/23/hello-world/index.html">
+<meta property="og:title" content="Mock in Python: patch">
+<meta property="og:url" content="http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/index.html">
 <meta property="og:site_name" content="Roubao1994">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
-<meta property="og:updated_time" content="2016-01-23T15:18:08.000Z">
+<meta property="og:description" content="单元测试中Python独特的有用的技巧——暂时改变resource的行为有时候，你需要一个resource在某个test中表现不一样，并且这种改变只是暂时的，以免它影响其它不相关的test. 为了暂时改变某个资源的行为，你可以使用patching，一个在Python Mock模块中的能力，关于Python Mock 我在上篇文章中已经解释过了。在这篇文章中，我会解释关于mock patching的">
+<meta property="og:updated_time" content="2016-01-29T08:15:20.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
+<meta name="twitter:title" content="Mock in Python: patch">
+<meta name="twitter:description" content="单元测试中Python独特的有用的技巧——暂时改变resource的行为有时候，你需要一个resource在某个test中表现不一样，并且这种改变只是暂时的，以免它影响其它不相关的test. 为了暂时改变某个资源的行为，你可以使用patching，一个在Python Mock模块中的能力，关于Python Mock 我在上篇文章中已经解释过了。在这篇文章中，我会解释关于mock patching的">
     
     
         
@@ -196,13 +193,13 @@ Quick">
         <div class="post-header main-content-wrap text-left">
     
         <h1 class="post-title" itemprop="headline">
-            Hello World
+            Mock in Python: patch
         </h1>
     
     <div class="post-meta">
-    <time itemprop="datePublished" content="Sat Jan 23 2016 23:18:08 GMT+0800">
+    <time itemprop="datePublished" content="Fri Jan 29 2016 14:11:34 GMT+0800">
 	
-		    Jan 23, 2016
+		    Jan 29, 2016
     	
     </time>
     
@@ -211,15 +208,29 @@ Quick">
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start"><a href="#Quick_Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create_a_new_post"><a href="#Create_a_new_post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server"><a href="#Run_server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files"><a href="#Generate_static_files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites"><a href="#Deploy_to_remote_sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+            <p><strong>单元测试中Python独特的有用的技巧——暂时改变resource的行为</strong><br>有时候，你需要一个resource在某个test中表现不一样，并且这种改变只是暂时的，以免它影响其它不相关的test. 为了暂时改变某个资源的行为，你可以使用patching，一个在Python Mock模块中的能力，关于Python Mock 我在上篇文章中已经解释过了。<br>在这篇文章中，我会解释关于mock patching的机制，并且阐述四种类型的patch装饰器，然后展示几种运用patch的方式。我同样会解释MagicMock，以及它在patching中所扮演的角色。<br>代码与Python 2.x 兼容，同时使用Mock 1.0.1, 假设读者已经有了很好的Python， Mock， 基本单元测试的基础。</p>
+<h2 id="Patch_u7684_u539F_u56E0"><a href="#Patch_u7684_u539F_u56E0" class="headerlink" title="Patch的原因"></a>Patch的原因</h2><p>假设你希望一个resource在某个时候抛出一个error或者exception，你会试着去改变resource的源代码，但是这意味着对源代码的独占访问，在商业产品中是不可能的。 如果你确实可以获得源代码，改变source会导致overhead。 你需要找到合适的代码并且决定要做哪些改变。 你需要重构resource，解决出现的各种errors, 并且测试你的改变是否如你预料一样运行正常，并且你没有破坏其他部分。</p>
+<p>一个更好更安全的方法就是使用mock。 mock取代了test resource,并且提供了相同的方法接口。 你可以让每个方法返回一个值，或者抛出一个eroor/exception。 并且你可以很简单的定制mock来满足特定的test或者test routine。 这种定制化尤其是需要暂时的时候，就是需要patching的时候。 它会在很多情形下发生，例如，强制一个不正常的condition或behavior以让你来测试它，无需为了某个简单的行为创建一个全新的mock对象。</p>
+<h2 id="Patch_u88C5_u9970_u5668"><a href="#Patch_u88C5_u9970_u5668" class="headerlink" title="Patch装饰器"></a>Patch装饰器</h2><p>Mock模块使用了四种装饰器来patch一个resource。 装饰器是特定的方法，它们将被patch的resource作为一个mock,分离的对象，或者类来返回。</p>
+<ul>
+<li>核心装饰器patch是最常用的。它有很多参数，target参数是必须的<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">patch(target, new = DEFAULT, spec|spec_set = <span class="keyword">None</span>, new_callable = <span class="keyword">None</span>, autospec = <span class="keyword">None</span>,**kwArgs)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<span class="highlight-text yellow">target</span>参数指的是patch的目标，它可以是一个类也可以是一个mock对象。 如果class是一个单独的文件，那么通过 package.module.ClassName传入；如果class在和装饰器相同的文件中，通过 '__main__.ClassName'传入。
+
+<span class="highlight-text yellow">spec/spec_set</span>参数设置了patching的属性。 这些属性可以从一个名字列表或者一个类中获得。省略spec和spec_set告诉核心装饰器使用target的属性。<br><br><span class="highlight-text yellow">autospec</span>参数是设置属性的另一种方法。 传递一个arbitratory Object进来， 被patch的resource会拿到这个object的属性。 传递True进来， 被patch的resource使用target的属性
+
+<span class="highlight-text yellow">new</span>参数设置了被patch的resource的基础。 它可以是一个类， 对象或者是另一个mock对象。 如果省略， 那么装饰器使用MagicMock类来构建resource。<br><br><span class="highlight-text yellow">new_callable</span> 参数也设置patched resource的基础。 但是这个class/object必须是可被调用的。即它实现了magic method __call__(). 同样，它默认使用MagicMock
+
+最后， <span class="highlight-text yellow">kwArgs</span>参数使用了字典作为属性的来源。 与spec， spec_set或者autospec不同， kwArgs还设置了每个attribute的初始值。 每个dictionary entry由属性名和patch value组成。<br><br>* patch.object 装饰器是另一个构建patched resource的装饰器。它和核心装饰器有着相同的参数。这个装饰器需要至少两个参数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">patch.object(target, attribute, [value, ...])</span><br></pre></td></tr></table></figure>
+<span class="highlight-text yellow">target</span>参数是指目标源， <span class="highlight-text yellow">attribute</span>是指被patch的属性。可选参数value是分配给属性的值。其他的六个可选属性与上一个decorator相同。
+
+* patch.dict装饰器使用了字典对象作为目标
+<!--￼2-->
+
+<span class="highlight-text yellow">values</span>参数是一系列的注入到目标的key/value对。<br><span class="highlight-text yellow">optional</span>参数重置了目标， 在patch之前去除了所有的entry.
+<span class="highlight-text yellow">kwArgs</span> 参数是另一个字典，它的entry被注入到目标中。<br><br>* patch.multiple装饰器使得你可以一次性的patch多个目标resource<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">patch.multiple(target, mock1 = DEFAULT,...,mockN = DEFAULT, [spec|spec_set = <span class="keyword">None</span>, autospec = <span class="keyword">None</span>, new_callable = <span class="keyword">None</span>, **kwArgs])</span><br></pre></td></tr></table></figure>
+<p><span class="highlight-text yellow">target</span> 参数设置了目标源的位置。<br>同样，如果resource与装饰器在同一文件中，设置参数为 “<strong>main</strong>“。 mock1 …… mockN都是target.<br>设置target为DEFAULT生成一个MagicMock实例， 与target的属性相同。<br>设置target为某个类产生一个可被调用的类。<br>patch.multiple装饰器使用了与核心装饰器相同的参数，但是patch.multiple将这些参数应用到所有的target上。</p>
 
             
                 
@@ -234,7 +245,7 @@ Quick">
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/25/mock-in-python/"  data-tooltip="mock in python">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -242,7 +253,7 @@ Quick">
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--disabled">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/25/Mock-in-Python-Mock-Class/" data-tooltip="Mock in Python: Mock Class">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -257,17 +268,17 @@ Quick">
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-google-plus"></i>
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-facebook-official"></i>
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-twitter"></i>
             </a>
         </li>
@@ -305,7 +316,7 @@ Quick">
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/25/mock-in-python/"  data-tooltip="mock in python">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -313,7 +324,7 @@ Quick">
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--disabled">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2016/01/25/Mock-in-Python-Mock-Class/" data-tooltip="Mock in Python: Mock Class">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -328,17 +339,17 @@ Quick">
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-google-plus"></i>
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-facebook-official"></i>
             </a>
         </li>
         <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-twitter"></i>
             </a>
         </li>
@@ -358,17 +369,17 @@ Quick">
                 <div id="share-options-bar" class="share-options-bar" data-behavior="3">
     <ul class="share-options">
         <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-google-plus"></i><span class="">分享到 Google+</span>
             </a>
         </li>
         <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
             </a>
         </li>
         <li class="share-option">
-            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/23/hello-world/">
+            <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://roubao1994.github.io/2016/01/29/Mock-in-Python-patch/">
                 <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
             </a>
         </li>
